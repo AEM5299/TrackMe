@@ -1,0 +1,21 @@
+p {
+	margin-left: 1.5rem;
+	font-size: 1.25rem;
+}
+
+h3 {
+	margin-left: 1.5rem;
+}
+
+ul {
+	margin-left: 2rem;
+}
+
+li {
+	font-size: 1.15rem;
+}
+
+p span {
+	color: red;
+	font-style: italic;
+}
