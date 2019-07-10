@@ -1,7 +1,4 @@
-const devices = [];
-devices.push({ user: 'Abood', name: "Abood's iPhone"});
-devices.push({ user: 'Ahmed', name: "Ahmed's iPhone"});
-devices.push({ user: 'Joey', name: "Joey's iPhone"});
+const devices = JSON.parse(localStorage.getItem('devices')) || [];
 
 devices.forEach( device => {
 	$('#devices tbody').append(`
@@ -11,3 +8,11 @@ devices.forEach( device => {
 	</tr>`
 	)
 });
+
+$('#add-device').on('click', () => {
+	const user = $("#user").val();
+	const name = $("#name").val();
+	devices.push({user, name});
+	localStorage.setItem('devices', JSON.stringify(devices));
+	location.href = "device-list.html"
+})
