@@ -1,3 +1,6 @@
+$("#navbar").load("navbar.html");
+$("#footer").load("footer.html");
+
 const devices = JSON.parse(localStorage.getItem('devices')) || [];
 
 devices.forEach( device => {
