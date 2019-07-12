@@ -2,23 +2,37 @@ $("#navbar").load("navbar.html");
 $("#footer").load("footer.html");
 
 const users = JSON.parse(localStorage.getItem('users')) || [];
-const devices = JSON.parse(localStorage.getItem('devices')) || [];
-
-devices.forEach( device => {
-	$('#devices tbody').append(`
-	<tr>
-		<td>${device.user}</td>
-		<td>${device.name}</td>
-	</tr>`
-	)
+const response = $.get('http://localhost:3001/devices').then(response => {
+	response.forEach( device => {
+		$('#devices tbody').append(`
+		<tr>
+			<td>${device.user}</td>
+			<td>${device.name}</td>
+		</tr>`
+		)
+	});
+})
+.catch(error => {
+	console.log(`Error: ${error}`);
 });
 
 $('#add-device').on('click', () => {
 	const user = $("#user").val();
 	const name = $("#name").val();
-	devices.push({user, name});
-	localStorage.setItem('devices', JSON.stringify(devices));
-	location.href = "/";
+	const sensorData = [];
+
+	const body = {
+		name,
+		user,
+		sensorData
+	};
+
+	$.post('http://localhost:3001/devices', body).then(response => {
+		location.href = '/';
+	})
+	.catch(error => {
+		console.log(`Error: ${error}`);
+	});
 });
 
 $('#send-command').on('click', () => {
