@@ -1,9 +1,9 @@
 const express = require('express')
 const app = express();
 const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://<username>:<password>@sit209-e7d7q.mongodb.net/TrackMe?retryWrites=true&w=majority', { useNewUrlParser: true });
+mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true });
 const Device = require('./models/device');
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 app.get('/api/devices', (req, res) => {
 	Device.find({}, (err, devices) => {

@@ -1,2 +1,3 @@
 # node packages
 /*/node_modules
+/api/.env
