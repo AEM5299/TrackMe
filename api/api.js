@@ -28,6 +28,11 @@ app.post('/api/devices', (req, res) => {
 	});
 });
 
+app.post('/api/send-command', (req, res) => {
+	console.log(req.body);
+	res.send(req.body);
+});
+
 app.get('/api/test', (req, res) => {
 	res.send('The API is Working!');
 });
