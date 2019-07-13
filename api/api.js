@@ -1,14 +1,30 @@
 const express = require('express')
-const app = express();
+const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
-mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true });
 const Device = require('./models/device');
 const port = process.env.PORT || 5000;
+mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true });
+
+const app = express();
+app.use(bodyParser.json())
 
 app.get('/api/devices', (req, res) => {
 	Device.find({}, (err, devices) => {
 		return err? res.send(err)
 		: res.send(devices);
+	});
+});
+
+app.post('/api/devices', (req, res) => {
+	const {name, user, sensorData} = req.body;
+	const newDevice = new Device({
+		name,
+		user,
+		sensorData
+	});
+	newDevice.save(err => {
+		return err? res.send(err)
+		: res.send('Device Added.');
 	});
 });
 
