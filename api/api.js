@@ -79,6 +79,16 @@ app.post('/api/send-command', (req, res) => {
 	res.send(req.body);
 });
 
+app.get('/api/devices/:deviceId/device-history', (req, res) => {
+	const { deviceId } = req.params;
+	Device.findOne({"_id": deviceId}, (err, device) => {
+		if(!device) return res.send("Unknown Device ID")
+		const { sensorData } = device;
+		return err? res.send(err)
+		: res.send(sensorData);
+	});
+});
+
 app.get('/api/test', (req, res) => {
 	res.send('The API is Working!');
 });
