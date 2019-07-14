@@ -1,0 +1,7 @@
+{
+	"name": "TrackMe API",
+	"version": "1.0.0",
+	"description": "List of endpoints for the TrackMe API",
+	"title": "TrackMe API",
+	"url": "http://localhost:5000"
+	}

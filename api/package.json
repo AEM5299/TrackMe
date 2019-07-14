@@ -9,10 +9,13 @@
     "express": "^4.17.1",
     "mongoose": "^5.6.4"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "apidoc": "^0.17.7"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon -r dotenv/config api.js"
+	"start": "nodemon -r dotenv/config api.js",
+	"doc": "apidoc -o public/generated-docs/ -e node_modules/"
   },
   "author": "Abood",
   "license": "ISC"
