@@ -89,6 +89,14 @@ app.get('/api/devices/:deviceId/device-history', (req, res) => {
 	});
 });
 
+app.get('/api/users/:user/devices', (req, res) => {
+	const { user } = req.params;
+	Device.find({ "user" : user}, (err, devices) => {
+		return err? res.send(err)
+		: res.send(devices);
+	});
+});
+
 app.get('/api/test', (req, res) => {
 	res.send('The API is Working!');
 });

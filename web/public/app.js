@@ -1,21 +1,44 @@
 $("#navbar").load("navbar.html");
 $("#footer").load("footer.html");
 
+const currentUser = localStorage.getItem('user');
 const API_URL = 'http://localhost:5000/api';
-const users = JSON.parse(localStorage.getItem('users')) || [];
-const response = $.get(`${API_URL}/devices`).then(response => {
-	response.forEach( device => {
-		$('#devices tbody').append(`
-		<tr>
-			<td>${device.user}</td>
-			<td>${device.name}</td>
-		</tr>`
-		)
+if(currentUser) {
+	$.get(`${API_URL}/users/${currentUser}/devices`)
+	.then(res => {
+		res.forEach( device => {
+			$('#devices tbody').append(`
+			<tr data-device-id=${device._id}>
+				<td>${device.user}</td>
+				<td>${device.name}</td>
+			</tr>
+			`);
+		});
+		$('#devices tbody tr').on('click', e => {
+			const deviceId = e.currentTarget.getAttribute('data-device-id');
+			$.get(`${API_URL}/devices/${deviceId}/device-history`)
+			.then(res => {
+				res.map(sensorData => {
+					$('#historyContent').empty().append(`
+					<tr>
+						<td>${sensorData.ts}</td>
+						<td>${sensorData.temp}</td>
+						<td>${sensorData.loc.lat}</td>
+						<td>${sensorData.loc.lon}</td>
+					</tr>
+					`);
+				});
+				$('#historyModal').modal('show');
+			});
+		});
+	})
+	.catch(err => {
+		console.error(`Error: ${err}`);
 	});
-})
-.catch(error => {
-	console.log(`Error: ${error}`);
-});
+} else {
+	const path = window.location.pathname;
+	if(path !== '/login' && path !== '/register') location.href = '/login';
+}
 
 $('#add-device').on('click', () => {
 	const user = $("#user").val();
@@ -45,22 +68,18 @@ $('#register').on('click', () => {
 	const username = $('#username').val();
 	const password = $('#password').val();
 	const confirm = $('#confirm-password').val();
-	const exists = users.find(user => user.name === username);
-	if (exists) {
-		$('#message').text('Username already exist').show();
+	if (!(password === confirm)) {
+		$('#message').text("Password doesn't match").show();
 	} else {
-		if (!(password === confirm)) {
-			$('#message').text("Password doesn't match").show();
-		} else {
-			$.post(`${API_URL}/register`, {username, password})
-			.then( res => {
-				if(res.success) {
-					location.href = '/login';
-				} else {
-					$('#message').text(res).show();
-				}
-			});
-		}
+		$.post(`${API_URL}/register`, {name: username, password: password, isAdmin: true})
+		.then( res => {
+			console.log(res)
+			if(res.success) {
+				location.href = '/login';
+			} else {
+				$('#message').text(res).show();
+			}
+		});
 	}
 });
 
