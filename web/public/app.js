@@ -47,16 +47,19 @@ $('#register').on('click', () => {
 	const confirm = $('#confirm-password').val();
 	const exists = users.find(user => user.name === username);
 	if (exists) {
-		$('#message').text('Username already exist.');
-		$('#message').show();
+		$('#message').text('Username already exist').show();
 	} else {
 		if (!(password === confirm)) {
-			$('#message').text("Password doesn't match.");
-			$('#message').show();
+			$('#message').text("Password doesn't match").show();
 		} else {
-			users.push({name: username, password: password});
-			localStorage.setItem('users', JSON.stringify(users));
-			location.href = '/login';
+			$.post(`${API_URL}/register`, {username, password})
+			.then( res => {
+				if(res.success) {
+					location.href = '/login';
+				} else {
+					$('#message').text(res).show();
+				}
+			});
 		}
 	}
 });
@@ -64,17 +67,20 @@ $('#register').on('click', () => {
 $('#login').on('click', () => {
 	const username = $('#username').val();
 	const password = $('#password').val();
-	const exists = users.find(user => user.name === username);
-	if (!exists || !(exists.password === password)) {
-		$('#message').text("Wrong credentials");
-		$('#message').show();
-	} else {
-		localStorage.setItem('isAuthenticated', true);
-		location.href = '/';
-	}
+	$.post(`${API_URL}/authenticate`, { name: username, password: password })
+	.then( res => {
+		if(res.success) {
+			localStorage.setItem('user', username);
+			localStorage.setItem('isAdmin', res.isAdmin);
+			location.href = '/';
+		} else {
+			$('#message').text(res).show();
+		}
+	});
 });
 
 const logout = () => {
-	localStorage.removeItem('isAuthenticated');
+	localStorage.removeItem('user');
+	localStorage.removeItem('isAdmin');
 	location.href = "/login";
 }
