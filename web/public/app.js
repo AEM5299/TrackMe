@@ -2,7 +2,7 @@ $("#navbar").load("navbar.html");
 $("#footer").load("footer.html");
 
 const currentUser = localStorage.getItem('user');
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://aafifi-sit-209.now.sh/api';
 if(currentUser) {
 	$.get(`${API_URL}/users/${currentUser}/devices`)
 	.then(res => {
