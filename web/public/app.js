@@ -2,7 +2,9 @@ $("#navbar").load("navbar.html");
 $("#footer").load("footer.html");
 
 const currentUser = localStorage.getItem('user');
-const API_URL = 'https://aafifi-sit-209.now.sh/api';
+const API_URL = 'https://aafifi-sit-209-ddszsqyel.now.sh/api';
+const MQTT_URL = 'https://aafifi-mqtt-sit-209.now.sh';
+
 if(currentUser) {
 	$.get(`${API_URL}/users/${currentUser}/devices`)
 	.then(res => {
@@ -61,7 +63,17 @@ $('#add-device').on('click', () => {
 
 $('#send-command').on('click', () => {
 	const command = $('#command').val();
-	console.log(`command is: ${command}`);
+	const deviceId = $('#deviceId').val();
+	const body = {
+		deviceId,
+		command
+	};
+	$.post(`${MQTT_URL}/send-command`, body).then(response => {
+		location.href = '/';
+	})
+	.catch(err => {
+		console.log(`Error: ${err}`);
+	});
 });
 
 $('#register').on('click', () => {

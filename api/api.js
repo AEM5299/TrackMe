@@ -155,11 +155,6 @@ app.post('/api/authenticate', (req, res) => {
 	});
 });
 
-app.post('/api/send-command', (req, res) => {
-	console.log(req.body);
-	res.send(req.body);
-});
-
 /**
 * @api {get} /api/devices/:deviceId/device-history DeviceHistory Device Sensor Data History
 * @apiVersion 1.0.0

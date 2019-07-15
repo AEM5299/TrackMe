@@ -20,6 +20,14 @@ client.on('connect', () => {
 	console.log('MQTT Connected');
 });
 
+app.post('/send-command', (req, res) => {
+	const { deviceId, command } = req.body;
+	const topic = `/command/${deviceId}`;
+	client.publish(topic, command, () => {
+		res.send('published new message');
+	});
+});
+
 app.listen(port, () => {
 	console.log(`MQTT server listening on port ${port}`);
-})
+});
