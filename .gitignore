@@ -1,5 +1,5 @@
 # node packages
 /*/node_modules
-/api/.env
+/*/.env
 /api/public
 /api/now.json
