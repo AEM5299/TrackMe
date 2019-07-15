@@ -15,7 +15,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
 	"start": "nodemon -r dotenv/config api.js",
-	"doc": "apidoc -o public/generated-docs/ -e node_modules/"
+	"doc": "apidoc -o public/generated-docs/ -e node_modules/",
+	"deploy": "now remove aafifi-sit-209 -y && now -p && now alias"
   },
   "author": "Abood",
   "license": "ISC"
