@@ -10,13 +10,14 @@
     "mongoose": "^5.6.4"
   },
   "devDependencies": {
-    "apidoc": "^0.17.7"
+    "apidoc": "^0.17.7",
+    "now": "^15.8.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-	"start": "nodemon -r dotenv/config api.js",
-	"doc": "apidoc -o public/generated-docs/ -e node_modules/",
-	"deploy": "now remove aafifi-sit-209 -y && now -p && now alias"
+    "start": "nodemon -r dotenv/config api.js",
+    "doc": "apidoc -o public/generated-docs/ -e node_modules/",
+    "deploy": "now remove aafifi-sit-209 -y && now -p && now alias"
   },
   "author": "Abood",
   "license": "ISC"
