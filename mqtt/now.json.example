@@ -1,0 +1,20 @@
+{
+	"version": 2,
+	"builds": [
+		{ "src": "mqtt.js", "use": "@now/node" }
+	],
+	"name": "<NAME>",
+	"alias": "<ALIAS>",
+	"routes": [
+	  {
+		"src": "/send-command",
+		"dest": "mqtt.js",
+		"methods": ["POST"]
+	  }
+	],
+	"env": {
+		"URL": "<MQTT BROKER SERVER>",
+		"USERNAME": "<USERNAME>",
+		"PASSWORD": "<PASSWORD>"
+	}
+}
