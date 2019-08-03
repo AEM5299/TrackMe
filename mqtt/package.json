@@ -11,11 +11,14 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "mongoose": "^5.6.7",
     "mqtt": "^3.0.0"
   },
   "devDependencies": {
     "dotenv": "^8.0.0",
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.1",
+    "random-coordinates": "^1.0.1",
+    "random-int": "^2.0.0"
   },
   "description": ""
 }
