@@ -20,8 +20,9 @@ if(currentUser) {
 			const deviceId = e.currentTarget.getAttribute('data-device-id');
 			$.get(`${API_URL}/devices/${deviceId}/device-history`)
 			.then(res => {
+				$('#historyContent').empty();
 				res.map(sensorData => {
-					$('#historyContent').empty().append(`
+					$('#historyContent').append(`
 					<tr>
 						<td>${sensorData.ts}</td>
 						<td>${sensorData.temp}</td>
