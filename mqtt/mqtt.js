@@ -22,6 +22,8 @@ app.use(function(req, res, next) {
 	next();
 });
 
+app.use(express.static(`${__dirname}/public/generated-docs`));
+
 function returnJSON(success, message, data) {
 	return {
 		success: success,
@@ -45,8 +47,9 @@ client.on('message', (topic, message) => {
 		const data = JSON.parse(message.toString());
 		console.log(data);
 
-		Device.findOne({"name": data.deviceId}, (err, device) => {
+		Device.findById(data.deviceId, (err, device) => {
 			if(err) console.log(err);
+			if(!device) return;
 			const { sensorData } = device;
 			const { ts, loc, temp } = data;
 
@@ -59,6 +62,10 @@ client.on('message', (topic, message) => {
 		});
 
 	}
+});
+
+app.get('/docs', (req, res) => {
+	res.sendFile(`${__dirname}/public/generated-docs/index.html`);
 });
 
 /**

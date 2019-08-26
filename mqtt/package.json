@@ -4,7 +4,8 @@
   "main": "mqtt.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon -r dotenv/config mqtt.js"
+    "start": "nodemon -r dotenv/config mqtt.js",
+    "doc": "apidoc -o public/generated-docs/ -e node_modules/"
   },
   "author": "Abood",
   "license": "ISC",
@@ -15,6 +16,7 @@
     "mqtt": "^3.0.0"
   },
   "devDependencies": {
+    "apidoc": "^0.17.7",
     "dotenv": "^8.0.0",
     "nodemon": "^1.19.1",
     "random-coordinates": "^1.0.1",
