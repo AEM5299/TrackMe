@@ -221,7 +221,7 @@ app.get('/api/devices/:deviceId/device-history', (req, res) => {
 		if (!device) return res.json(returnJSON(false, "Unknown Device ID"));
 		if (err) return res.json(returnJSON(false, err));
 		const { sensorData } = device;
-		return res.json(returnJSON(true, `${device.name}'s Data`, { sensorData: sensorData }));
+		return res.json(returnJSON(true, `${device.name}'s Data`, { sensorData: sensorData.sort(function(a, b){return b.ts - a.ts}) }));
 	});
 });
 
