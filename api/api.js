@@ -3,16 +3,40 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
 const Device = require('./models/device');
 const User = require('./models/user');
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
+var JwtStrategy = require('passport-jwt').Strategy,
+	ExtractJwt = require('passport-jwt').ExtractJwt;
 const port = process.env.PORT || 5000;
 mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true });
-
 const app = express();
+
+
+passport.use(new JwtStrategy({
+	jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+	secretOrKey: process.env.JWT_SECRET
+},
+	(jwtPayload, cb) => {
+		return User.findById(jwtPayload.id)
+			.then(user => {
+				return cb(null, {
+					id: user._id,
+					name: user.name,
+					is_admin: user.is_admin
+				});
+			})
+			.catch(err => {
+				return cb(err);
+			});
+	}
+));
+
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use(function (req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Headers", "Origin, X-RequestedWith, Content-Type, Accept");
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept Access-Control-Allow-Headers, Authorization, X-Requested-With");
 	next();
 });
 
@@ -72,8 +96,8 @@ app.get('/docs', (req, res) => {
 * 	]
 * }
 */
-app.get('/api/devices', (req, res) => {
-	Device.find({}, (err, devices) => {
+app.get('/api/devices', passport.authenticate('jwt', { session: false }), (req, res) => {
+	Device.find({user: req.user.name}, (err, devices) => {
 		return err ? res.json(returnJSON(false, err))
 			: res.json(returnJSON(true, "Array of all Devices", devices));
 	});
@@ -109,8 +133,9 @@ app.get('/api/devices', (req, res) => {
 * 	}
 * }
 */
-app.post('/api/devices', (req, res) => {
-	const { name, user, sensorData } = req.body;
+app.post('/api/devices', passport.authenticate('jwt', { session: false }), (req, res) => {
+	const { name, sensorData } = req.body;
+	const user = req.user.name;
 	const newDevice = new Device({
 		name,
 		user,
@@ -168,7 +193,7 @@ app.post('/api/register', (req, res) => {
 * 	"success": true,
 * 	"message": "Autheticated Successfully",
 * 	"data": {
-* 		"isAdmin": true
+* 		"token": "JWT-TOKEN"
 * 	}
 * }
 * @apiErrorExample {josn} Error-Response:
@@ -179,12 +204,18 @@ app.post('/api/register', (req, res) => {
 */
 app.post('/api/authenticate', (req, res) => {
 	const { name, password } = req.body;
-	User.findOne({ name: name }, (err, user) => {
-		if (err)
-			return res.json(returnJSON(false, err));
-		if (!user || password !== user.password) return res.json(returnJSON(false, "Wrong Credentials"));
-		return res.json(returnJSON(true, "Autheticated Successfully", { isAdmin: user.isAdmin }));
-	});
+	User.findOne({name, password})
+	.then(user => {
+		console.log(user);
+		if(!user) res.json(returnJSON(false, "Wrong Credentials"));
+		const payload = { id: user._id, name: user.name };
+		const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24h' });
+		res.json(returnJSON(true, "Autheticated Successfully", { token }));
+	})
+	.catch(err => {
+		console.log(err);
+		res.status(500).json(returnJSON(false, "Server Error", { err }));
+	})
 });
 
 /**
@@ -215,13 +246,13 @@ app.post('/api/authenticate', (req, res) => {
 * 	"message": "Unknown Device ID"
 * }
 */
-app.get('/api/devices/:deviceId/device-history', (req, res) => {
+app.get('/api/devices/:deviceId/device-history', passport.authenticate('jwt', { session: false }), (req, res) => {
 	const { deviceId } = req.params;
 	Device.findById(deviceId, (err, device) => {
-		if (!device) return res.json(returnJSON(false, "Unknown Device ID"));
+		if (!device || device.user != req.user.name) return res.json(returnJSON(false, "Unknown Device ID"));
 		if (err) return res.json(returnJSON(false, err));
 		const { sensorData } = device;
-		return res.json(returnJSON(true, `${device.name}'s Data`, { sensorData: sensorData.sort(function(a, b){return b.ts - a.ts}) }));
+		return res.json(returnJSON(true, `${device.name}'s Data`, { sensorData: sensorData.sort(function (a, b) { return b.ts - a.ts }) }));
 	});
 });
 
@@ -273,10 +304,11 @@ app.get('/api/devices/:deviceId/device-history', (req, res) => {
 * 	"message": "No Devices"
 * }
 */
-app.get('/api/users/:user/devices', (req, res) => {
+app.get('/api/users/:user/devices', passport.authenticate('jwt', { session: false }), (req, res) => {
 	const { user } = req.params;
 	Device.find({ "user": user }, (err, devices) => {
 		if (err) return res.json(returnJSON(false, err));
+		if(user != req.user.name && !req.user.is_admin) return res.status(401).json(returnJSON(false, "Unauthorized"))
 		if (!devices.length) return res.json(returnJSON(false, "No Devices"));
 		return res.json(returnJSON(true, `${user} Devices`, { devices: devices }));
 	});

@@ -15,7 +15,7 @@
 </nav>
 
 <script>
-	const isAuthenticated = localStorage.getItem('user');
+	const isAuthenticated = sessionStorage.getItem('token');
 	const logoutElement = '<a class="nav-item nav-link" onClick="logout()">Logout</a>';
 	const loginElement = '<a class="nav-item nav-link" href="/login">Login</a>';
 	isAuthenticated? $('#auth-nav').append(logoutElement) : $('#auth-nav').append(loginElement);
